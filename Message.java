@@ -1,16 +1,15 @@
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 
 
 public class Message {
 
-	InetSocketAddress to;
-	ByteBuffer bbuf;
+	InetSocketAddress from;
+	String msg;
 	
-	Message(InetSocketAddress t, ByteBuffer b){
+	Message(InetSocketAddress f, String m){
 		
-		to = t; 
-		bbuf = b;
+		from = f; 
+		msg = m;
 	}
 
 }
