@@ -25,6 +25,7 @@ public class Hop {
 	static HashSet<String> my_names;
 	static ReentrantLock lock;
 	static BlockingQueue<Message> reception;
+	static Map<String, String> rout_table;
 	
 	
 	Hop() throws IOException{
@@ -39,6 +40,7 @@ public class Hop {
 		my_names = new HashSet<String>();
 		lock = new ReentrantLock();
 		reception = new LinkedBlockingQueue<Message>();
+		rout_table = new HashMap<String, String>();
 	}
 	
 	 static void Beeper() throws InterruptedException, IOException{
@@ -47,7 +49,9 @@ public class Hop {
 			Thread.sleep(100);
 			bbuf.put("B#".getBytes("UTF-16be"));
 			bbuf.flip();
+			//System.out.println(StandardCharsets.UTF_16BE.decode(bbuf.duplicate()).toString());
 			mySocket.send(bbuf.duplicate(), to_socket);
+			
 			bbuf.clear();
 		}
 	 }
@@ -63,12 +67,12 @@ public class Hop {
 				InetSocketAddress client_from = (InetSocketAddress) mySocket.receive(bbuf);
 				bbuf.flip();
 				str = StandardCharsets.UTF_16BE.decode(bbuf.duplicate()).toString();
-
+				//System.out.println(str);
 				//System.out.println("Recieve this");
 				//System.out.println(str);
 				//reception.put(str);
 				bbuf.clear();
-				System.out.println(client_from.toString());
+				//System.out.println(client_from.toString());
 				
 				reception.put(new Message(client_from, str));
 				//msg_analiser(client_from, str);
@@ -114,30 +118,40 @@ public class Hop {
 			SocketAddress add = m.from; 
 			String msg = m.msg;
 			
-			if (msg.length() > 2 && msg.charAt(0) == 'B') {
+			if (msg.length() > 0 && msg.charAt(0) == 'B') {
+				
+				//System.out.println("B");
 				String H = "H#";
 				//H = H + msg.substring(2);
 				String tmp = add.toString();
-				int p;
-				p = tmp.indexOf('/');
-				tmp = tmp.substring(0, p);
 				
+				int p;
+				p = tmp.indexOf(":");
+				tmp = tmp.substring(1, p);
+				//System.out.println(tmp);
 				H = H + tmp + "#";
 				ByteBuffer to_send = ByteBuffer.allocate(1500);
 				to_send.put(H.getBytes("UTF-16BE"));
 				to_send.limit(to_send.position());
 				to_send.position(0);
+				//System.out.println(StandardCharsets.UTF_16BE.decode(to_send.duplicate()).toString());
 				mySocket.send(to_send, add);
+				
 	
 			}
 	
 			if (msg.length() > 0 && msg.charAt(0) == 'H') {
-	
+				
+				//System.out.println("H");
+				//System.out.println(msg);
 				int p, q;
 				p = msg.indexOf('#');
-				q = msg.indexOf(p + 1, '#');
-				String my_add = msg.substring(p + 1, q);
+				//System.out.println(p);
+				q = msg.indexOf('#', p + 1);
 				
+				
+				String my_add = msg.substring(p + 1, q);
+				//System.out.println(my_add);
 				my_names.add(my_add);
 				
 				if (!g.containsKey("zero")){
@@ -145,14 +159,18 @@ public class Hop {
 				}
 				g.get("zero").put(my_add, 0);
 				
+				//System.out.println(g.keySet().toString());
 				if (!g.containsKey(my_add)){
 					g.put(my_add, new HashMap<String, Integer>());
 				}
 				g.get(my_add).put("zero", 0);
 				
 				String tmp = add.toString();
-				p = tmp.indexOf('/');
-				tmp = tmp.substring(0, p);
+				p = tmp.indexOf(":");
+				tmp = tmp.substring(1, p);
+				
+				//System.out.println(tmp);
+
 				
 				g.get(my_add).put(tmp, 0);
 				if (!g.containsKey(tmp)){
@@ -170,23 +188,29 @@ public class Hop {
 				to_send.limit(to_send.position());
 				to_send.position(0);
 				mySocket.send(to_send, to_socket);
+				
+				
 			}
 	
 			if (msg.length() > 0 && msg.charAt(0) == 'T') {
 	
+				//System.out.println("T");
 				int p, q, r;
 				p = msg.indexOf('#');
-				q = msg.indexOf(p + 1, '#');
-				r = msg.indexOf(q + 1, '#');
+				q = msg.indexOf('#', p + 1);
+				r = msg.indexOf('#', q + 1);
 				String from = msg.substring(p + 1, q);
 				String to = msg.substring(q + 1, r);
 				
-				
+				//System.out.println(from);
+				//System.out.println(to);
 				if (my_names.contains(from)||my_names.contains(to))
-					break;
+					continue;
 				
 				if (g.containsKey(from) && g.get(from).containsKey(to))
-					break;
+					continue;
+				
+
 				
 				if (!g.containsKey(from)){
 					g.put(from, new HashMap<String, Integer>());
@@ -209,7 +233,7 @@ public class Hop {
 			}
 	
 			if (msg.length() > 0 && msg.charAt(0) == 'S') {
-				
+				//System.out.println("S");
 				while(lock.isLocked())
 					Thread.sleep(10);
 				
@@ -224,10 +248,10 @@ public class Hop {
 				
 				if (my_names.contains(to_add)){
 					System.out.println("Recieved a message:" + text_msg);
-					break;
+					continue;
 				}
 				
-				String next_hop = next(to_add);
+				String next_hop = rout_table.get(to_add);//= next(to_add);
 				
 				InetSocketAddress to_sock = new InetSocketAddress(next_hop, 30009);
 				
@@ -330,11 +354,13 @@ public class Hop {
 			return "";
 		}
 		
+		String nextnext = ""; 
 		String curr = to;
 		String next = "";
 		while(curr != "zero")
 		{	
 			//System.out.println(curr);
+			nextnext = next;
 			next = curr;
 			curr = p.get(curr);
 			
@@ -343,22 +369,39 @@ public class Hop {
 		return next;
 		
 	}
+	
+	public static void roots_build(){
+		String st;
+		for (String s: g.keySet()){
+			 
+			if(!my_names.contains(s) && !s.equals("zero")){
+				st = next(s);
+				rout_table.put(s, st);
+			}
+			
+		}
+		
+		
+	}
 		//***********************************************************************
 		//************************************************************************
 	 
 	public static void graph_control() throws InterruptedException{
 		
-		
-		Thread.sleep(3000);
-		lock.lock();
-		g.clear();
-		p.clear();
-		q.clear();
-		d.clear();
-		Thread.sleep(200);
-		Dijkstra("zero");
-		lock.unlock();
-		System.out.println(g.keySet().toString());
+		while(true){
+			Thread.sleep(3000);
+			lock.lock();
+			g.clear();
+			p.clear();
+			q.clear();
+			d.clear();
+			rout_table.clear();
+			Thread.sleep(200);
+			Dijkstra("zero");
+			roots_build();
+			lock.unlock();
+			System.out.println(rout_table.toString());
+		}
 
 	}
 	
