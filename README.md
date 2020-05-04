@@ -7,5 +7,5 @@ Setting up all routes manually could be a time consuming task. There is a way to
 
 The approach is based on the following protocol.
 
-- Each node starts to _ _beep_ _ (i.e. broadcast messages of **type B**) through all accessible interfaces.
-- When a node recieves such a _ _beep_ _ it already knows the _address_ it was sent from. It replies _ _ Hello_ _ the _ _ address_ _ with a message of **type H**('H#_address_')
+- Each node starts to _beep_(i.e. broadcast messages of **type B**) through all accessible interfaces.
+- When a node recieves such a _beep_ it already knows the _address_ it was sent from. It replies _Hello_ the _address_ with a message of **type H**('H#_address_') so that after recieveing this message the _beeper_ will know it's own address in the subnet, the interface it corresponds to and will make acquaintance to it's neighbour.
