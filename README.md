@@ -24,4 +24,6 @@ Once the entire graph is constructed using the transmitted pieces of information
 
 Probably the easiest way to test the described approach is to use Linux Network Namespaces instead of physical connections. In order to create the network from the picture above one may use commands from file **create-ns**:
 
-'''sudo bash create-ns'''
+```
+sudo bash create-ns
+```
