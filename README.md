@@ -8,4 +8,4 @@ Setting up all routes manually could be a time consuming task. There is a way to
 The approach is based on the following protocol.
 
 - Each node starts to _ _beep_ _ (i.e. broadcast messages of **type B**) through all accessible interfaces.
-- When a node recieves such a _ _beep_ _ it already knows the _ _address_ _ it was sent from. It replies _ _ Hello_ _ the _ _ address_ _ with a message of **type H**('H#_ _ address_ _ ')
+- When a node recieves such a _ _beep_ _ it already knows the _ _address_ _ it was sent from. It replies _ _ Hello_ _ the _ _ address_ _ with a message of **type H**('H#_ _address_ _ ')
