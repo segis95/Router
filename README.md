@@ -18,4 +18,10 @@ The approach is based on the following protocol.
 
 ## Routing
 
-Once the entire graph is constructed using the transmitted pieces of information each node performs **Dijkstra algorithm** to establish optimal routes from itself to all other nodes. Here is _optimal subroute_ principle is applied: **a subroute of an optimal route is also an optimal route**.
+Once the entire graph is constructed using the transmitted pieces of information each node performs **Dijkstra algorithm** to establish optimal routes from itself to all other nodes. Here the _optimal subroute_ principle is applied: **a subroute of an optimal route is also an optimal route**.
+
+## Testing
+
+Probably the easiest way to test the described approach is to use Linux Network Namespaces instead of physical connections. In order to create the network from the picture above one may use commands from file **create-ns**:
+
+'''sudo bash create-ns'''
