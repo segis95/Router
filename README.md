@@ -27,3 +27,23 @@ Probably the easiest way to test the described approach is to use Linux Network 
 ```
 sudo bash create-ns
 ```
+An to destroy it:
+```
+sudo bash destroy-ns
+```
+The code can be compiled with Java 1.8.0. One may also create an executable .jar as follows:
+```
+javac Hop.java Message.java Netint.java Pair.java SubnetUtils.java
+jar cvmf MANIFEST.MF Protocol.jar Hop.class Message.class Netint.class Pair.class SubnetUtils.class
+```
+For simplicity it's possible to recreate the network and recompile the code using the following script contained in **compile**. So now
+```
+javac Hop.java Message.java Netint.java Pair.java SubnetUtils.java
+jar cvmf MANIFEST.MF Protocol.jar Hop.class Message.class Netint.class Pair.class SubnetUtils.class
+bash destroy-ns
+bash create-ns
+```
+is the same as: 
+```
+sudo bash compile
+```
