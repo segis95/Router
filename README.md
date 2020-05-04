@@ -7,4 +7,4 @@ Setting up all routes manually could be a time consuming task. There is a way to
 
 The approach is based on the following protocol.
 
-- Each node starts to __beep__
+- Each node starts to _ _beep_ _ (i.e. send messages _ _ of type **B** _ _)
