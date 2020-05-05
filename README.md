@@ -49,5 +49,19 @@ is the same as:
 ```
 sudo bash compile
 ```
+
+It's recommended to launch the test if not simultaneously then consequently with a small delay. To launch it on a one node use:
+```
+sudo ip netns exec ns1 java -jar Protocol.jar
+```
 ## Project structure
 
+- **Hop.java** contains _main_ function. It launches threads for _Beeper_, _Message Analyser_, _Reciever_ and _Graph Builder_;
+- **Message.java** contains Message class description;
+- **Pair.java** is used for the purpose of Dijkstra algorithm to maintain distance priorities in the Priority Queue;
+- **Netint.java** is used to extract broadcasts subnet addresses from availible interfaces;
+- **SubnetUtils.java** by Apache Software Foundation (ASF) is only partially used for addresses format conversion;
+
+## Important constants
+
+The key constants in the code are **final int bpm** - delay(in ms) between two consecutive beeps and own addresses pairs transmission and **final int time_of_execution** - the time(in ms) of total information collection preceding to the routing graph processing. The first one represents a trade-off between the network overflooding and a low probability of information propagation between all nodes. Increasing of the second one auguments the probability for innformation to propagate through the entire network.  
