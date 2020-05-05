@@ -7,8 +7,7 @@ public class Pair {
 	//Pair is the name of a point with known distance to it
 	String id;
 	int dist;
-	
-	
+    
 	Pair(int dist1, String id1)
 	{
 		id = id1;
