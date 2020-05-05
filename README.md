@@ -49,3 +49,5 @@ is the same as:
 ```
 sudo bash compile
 ```
+## Project structure
+
